@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Weather</title>
+<!-- Don't forget to link to jQuery -->
+<style>
+	input{
+		margin: 10px 0px;
+		padding: 5px;
+	}
+	#forecast{
+		/*This div should not appear until the weather is returned.*/
+	}
+	#forecast div{
+		width: 25vw;
+		border: 8px solid blue;
+		margin: 0 auto;
+		background: black;
+	}
+	img{
+		width:100%;
+	}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- This gets the jquery for this whole thing to use -->
+<script>
+		$(document).ready(function() {
+/*Keeps the div from appearing until the function is returned.*/
+			$('#forecast').hide()
+		});
+
+    function gettingJSON() {
+			$('#forecast').show()
+    	console.log("Hi")
+
+// Use the OpenWeather API
+// Set up defaults and assign values to key variables
+		var apibase = "https://api.openweathermap.org/data/2.5/weather?q="
+		var defaultCity = "Ann Arbor"
+		var defaultTempUnit = "imperial"
+		var city = defaultCity
+		var tempUnit = defaultTempUnit
+		var apiKey = "555e850b6a70cce8bf48c0d8af6ffba8"
+		var defaultTempAbbrev = "F"
+		var tempAbbrev = defaultTempAbbrev
+
+// Documentation for units parameters https://openweathermap.org/current#data
+		if ($("#farenheit").prop("checked")==true) {
+			var tempUnit = "imperial"
+			var tempAbbrev = "F"
+		} else if ($("#celcius").prop("checked")==true) {
+		 	var tempUnit = "metric"
+			var tempAbbrev = "C"
+		}
+		if ($("#location").val()) {
+			city = $("#location").val()
+			console.log(city)
+		}
+// Update this query with the city, weather format (Celsius or Fahrenheit) and your OpenWeatherMap ID
+		let query = apibase + city + "&units=" + tempUnit + "&APPID=" + apiKey
+    	console.log("Query is :" + query)
+// Help with trying to get into a json https://www.w3schools.com/js/js_json_parse.asp
+// Gets the json from the api and make temperature variables
+    $.getJSON(query,function(json){
+        console.log(JSON.stringify(json))
+				var txt = JSON.stringify(json)
+				var obj = JSON.parse(txt)
+				var currentTemp = obj.main.temp
+					console.log(currentTemp)
+				var highTemp = obj.main.temp_max
+					console.log(highTemp)
+				var lowTemp = obj.main.temp_min
+					console.log(lowTemp)
+// Slots temperature and city variables into the html https://www.w3schools.com/jquery/html_html.asp
+				$("#loc").html("<b>" + city + "</b>")
+				$("#temp").html("<b>" + currentTemp + " degrees " + tempAbbrev + "</b>")
+				$("#high").html("<b>" + highTemp + " degrees " + tempAbbrev + "</b>")
+				$("#low").html("<b>" + lowTemp + " degrees " + tempAbbrev + "</b>")
+		})
+
+    }
+    </script>
+</head>
+<body>
+	<!-- DO NOT CHANGE ANY CODE IN THE BODY OF THIS FILE. -->
+	<label for ="location">City:</label><input type = "text" id = "location"><br>
+	<input type = "radio" name = "temp" value = "imperial" id = "fahrenheit"> <label for = "fahrenheit">Fahrenheit</label><br>
+	<input type = "radio" name = "temp" value = "metric" id = "celcius"> <label for = "celcius">Celcius</label><br>
+
+	<button id = "getIt" onclick = " gettingJSON()">Get Weather</button>
+
+
+	<div id = "forecast">
+		<div>
+		<img id = "tempImg" src="" alt = "" title = "">
+		</div>
+		<p>The temperature in <span id = "loc"></span> is currently <span id = "temp"></span>.</p>
+		<p>The high today will be <span id = "high"></span> and the low will be <span id = "low"></span>.</p>
+
+	</div>
+</body>
+</html>
